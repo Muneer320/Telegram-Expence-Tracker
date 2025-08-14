@@ -560,6 +560,7 @@ HELP_TEXT = """
 🔧 **Basic Commands:**
 • `/add` → Add new expense
 • `/list [n]` → Show last n entries (default: 10)  
+• `/sheet` → Get Google Sheets link
 • `/update <row>` → Update specific row
 • `/delete <row>` → Delete specific row
 • `/list_filter` → Filter expenses
@@ -673,6 +674,22 @@ async def list_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         logger.exception("list failed")
         await update.message.reply_text(f"❌ **Failed to list expenses!**\n\nGoogle Sheets error: `{str(e)}`\n\nPlease try again.", parse_mode='Markdown')
+
+
+async def sheet_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Return the Google Sheets URL for direct access"""
+    sheets_url = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_KEY}"
+    
+    msg = f"""
+📊 **Your Expense Tracker Sheet**
+
+🔗 **Direct Link:**
+{sheets_url}
+
+💡 **Quick Access:** Tap the link above to open your expense tracker in Google Sheets!
+    """
+    
+    await update.message.reply_text(msg.strip(), parse_mode='Markdown')
 
 
 async def list_categories_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -1578,6 +1595,7 @@ def main():
     app.add_handler(CommandHandler("help", help_cmd))
     app.add_handler(CommandHandler("add", add_cmd))
     app.add_handler(CommandHandler("list", list_cmd))
+    app.add_handler(CommandHandler("sheet", sheet_cmd))
     app.add_handler(CommandHandler("list_categories", list_categories_cmd))
     app.add_handler(CommandHandler("list_filter", list_filter_cmd))
     app.add_handler(CommandHandler("help_filters", help_filters_cmd))
