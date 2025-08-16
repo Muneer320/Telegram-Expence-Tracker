@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 import re
+import json
 import logging
 import gspread
 from datetime import datetime, timedelta
@@ -12,10 +13,10 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, Cal
 load_dotenv()
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 SPREADSHEET_KEY = os.getenv("SPREADSHEET_KEY")
-GOOGLE_SA_FILE = os.getenv("GOOGLE_SA_FILE")
+GOOGLE_SA_JSON = os.getenv("GOOGLE_SA_JSON")
 
-if not BOT_TOKEN or not SPREADSHEET_KEY or not GOOGLE_SA_FILE:
-    raise SystemExit("Missing required env vars: TELEGRAM_BOT_TOKEN, SPREADSHEET_KEY, GOOGLE_SA_FILE")
+if not BOT_TOKEN or not SPREADSHEET_KEY or not GOOGLE_SA_JSON:
+    raise SystemExit("Missing required env vars: TELEGRAM_BOT_TOKEN, SPREADSHEET_KEY, GOOGLE_SA_JSON")
 
 # Logging
 logging.basicConfig(level=logging.INFO)
@@ -23,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 # Google Sheets
 try:
-    gc = gspread.service_account(filename=GOOGLE_SA_FILE)
+    gc = gspread.service_account_from_dict(json.loads(GOOGLE_SA_JSON))
     sh = gc.open_by_key(SPREADSHEET_KEY)
     ws = sh.sheet1
 except Exception as e:
